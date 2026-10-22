@@ -69,7 +69,7 @@ export function setFund(newFund) {
  * Format channel payment proof EXACTLY matching the user's requested design
  */
 export function formatChannelProofPost(data) {
-  const botHandle = config.botUsername || 'meta_farming_pement_bot';
+  const projectBotHandle = config.projectBotUsername || 'Meta_Farming_bot';
   const amountStr = typeof data.amount === 'number' 
     ? data.amount.toFixed(4) 
     : (parseFloat(data.amount) ? parseFloat(data.amount).toFixed(4) : data.amount);
@@ -102,7 +102,7 @@ ${data.maskedTo}
 ━━━━━━━━━━━━━━━━━━━━━━
 💠 𝐌𝐄𝐓𝐀 𝐅𝐀𝐑𝐌𝐈𝐍𝐆
 Your Rewards. Your Progress.
-🤖 @${botHandle}`;
+🤖 @${projectBotHandle}`;
 }
 
 /**
