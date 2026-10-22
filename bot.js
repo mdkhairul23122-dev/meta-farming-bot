@@ -39,6 +39,10 @@ function loadStats() {
 export function createBot() {
   const bot = new Telegraf(config.botToken);
 
+  bot.catch((err, ctx) => {
+    console.error(`⚠️ Telegram Bot error for ${ctx?.updateType || 'update'}:`, err.message || err);
+  });
+
   // Security Middleware: Identify admin
   bot.use(async (ctx, next) => {
     const fromId = ctx.from?.id ? String(ctx.from.id) : null;

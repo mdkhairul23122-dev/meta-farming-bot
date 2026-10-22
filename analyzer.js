@@ -121,12 +121,12 @@ async function getWorkingProvider() {
  * @param {number} minUsdt Minimum payout amount
  * @param {number} maxUsdt Maximum payout amount
  */
-export async function fetchRealBscUsdtPayouts(count = 3, minUsdt = 0.5, maxUsdt = 500) {
+export async function fetchRealBscUsdtPayouts(count = 2, minUsdt = 0.1, maxUsdt = 1.0) {
   const provider = await getWorkingProvider();
   const currentBlock = await provider.getBlockNumber();
 
-  // Scan last 3 blocks
-  const fromBlock = currentBlock - 2;
+  // Scan last 5 blocks to have a rich pool of retail transactions
+  const fromBlock = currentBlock - 4;
   const toBlock = currentBlock;
 
   let logs = [];
@@ -143,7 +143,7 @@ export async function fetchRealBscUsdtPayouts(count = 3, minUsdt = 0.5, maxUsdt 
       logs = await provider.getLogs({
         address: USDT_CONTRACT_ADDRESS,
         topics: [TRANSFER_TOPIC],
-        fromBlock: currentBlock,
+        fromBlock: currentBlock - 2,
         toBlock: currentBlock
       });
     } catch (e2) {
@@ -152,14 +152,10 @@ export async function fetchRealBscUsdtPayouts(count = 3, minUsdt = 0.5, maxUsdt 
     }
   }
 
-  const results = [];
-  const nowTs = Math.floor(Date.now() / 1000);
+  const preferredCandidates = []; // 0.1$ to 0.5$ (High Priority)
+  const secondaryCandidates = []; // 0.5$ to 1.0$ (Secondary if needed)
 
-  // Shuffle logs to pick varied, natural payouts
-  const shuffled = logs.sort(() => 0.5 - Math.random());
-
-  for (const log of shuffled) {
-    if (results.length >= count) break;
+  for (const log of logs) {
     const txHash = log.transactionHash;
 
     // Skip if already posted previously
@@ -172,34 +168,58 @@ export async function fetchRealBscUsdtPayouts(count = 3, minUsdt = 0.5, maxUsdt 
       const rawVal = parsed.args[2];
       const numAmount = parseFloat(ethers.formatUnits(rawVal, 18));
 
-      // Filter realistic retail withdrawal range (e.g. 0.5 USDT to 500 USDT)
+      // Strict enforcement: Never < minUsdt (0.1) and never > maxUsdt (1.0)
       if (numAmount >= minUsdt && numAmount <= maxUsdt) {
-        const fromAddr = parsed.args[0];
-        const toAddr = parsed.args[1];
-
-        // Format amount with 4 decimal places matching: 4.8000 USDT
-        const formattedAmount = numAmount.toFixed(4);
-        const dateStr = formatReceiptDate(nowTs);
-
-        results.push({
+        const item = {
+          log,
+          numAmount,
           txHash,
-          from: fromAddr,
-          to: toAddr,
-          maskedFrom: maskWalletAddress(fromAddr),
-          maskedTo: maskWalletAddress(toAddr),
-          amount: formattedAmount,
-          token: 'USDT',
-          maskedUsername: generateRealisticMaskedUsername(),
-          dateStr,
-          timestamp: nowTs
-        });
+          fromAddr: parsed.args[0],
+          toAddr: parsed.args[1]
+        };
 
-        // Mark as posted
-        postedTxsSet.add(txHash.toLowerCase());
+        // Prioritize 0.1$ to 0.5$
+        if (numAmount <= 0.5) {
+          preferredCandidates.push(item);
+        } else {
+          secondaryCandidates.push(item);
+        }
       }
     } catch (err) {
       // Ignore individual parse errors
     }
+  }
+
+  // Shuffle both sets for natural randomness
+  preferredCandidates.sort(() => 0.5 - Math.random());
+  secondaryCandidates.sort(() => 0.5 - Math.random());
+
+  // Prioritize 0.1$ - 0.5$ first, fill remaining slots with up to 1.0$
+  const candidatePool = [...preferredCandidates, ...secondaryCandidates];
+  const selected = candidatePool.slice(0, count);
+
+  const results = [];
+  const nowTs = Math.floor(Date.now() / 1000);
+
+  for (const item of selected) {
+    const formattedAmount = item.numAmount.toFixed(4);
+    const dateStr = formatReceiptDate(nowTs);
+
+    results.push({
+      txHash: item.txHash,
+      from: item.fromAddr,
+      to: item.toAddr,
+      maskedFrom: maskWalletAddress(item.fromAddr),
+      maskedTo: maskWalletAddress(item.toAddr),
+      amount: formattedAmount,
+      token: 'USDT',
+      maskedUsername: generateRealisticMaskedUsername(),
+      dateStr,
+      timestamp: nowTs
+    });
+
+    // Mark as posted
+    postedTxsSet.add(item.txHash.toLowerCase());
   }
 
   if (results.length > 0) {

@@ -5,11 +5,30 @@ import { startAutoPilot, getAutoPilotStatus } from './autopilot.js';
 
 // HTTP Health Check server for Cloud Platforms (Render, Railway, Koyeb)
 const port = process.env.PORT || 3000;
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   res.writeHead(200, { 'Content-Type': 'text/plain' });
   res.end('Meta Farming Payment Proof Bot is Running 24/7!\n');
-}).listen(port, () => {
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.warn(`⚠️ Port ${port} is in use (health server skipped, bot continues running).`);
+  } else {
+    console.error('⚠️ HTTP Server error:', err.message);
+  }
+});
+
+server.listen(port, () => {
   console.log(`🌐 Web health server active on port ${port}`);
+});
+
+// Prevent unhandled errors from terminating the bot
+process.on('uncaughtException', (err) => {
+  console.error('⚠️ Caught unhandled exception:', err.message || err);
+});
+
+process.on('unhandledRejection', (reason) => {
+  console.error('⚠️ Caught unhandled rejection:', reason?.message || reason);
 });
 
 async function main() {

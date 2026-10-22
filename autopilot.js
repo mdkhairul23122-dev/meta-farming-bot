@@ -15,8 +15,8 @@ const defaultConfig = {
   enabled: true,         // Auto-post enabled by default
   intervalMinutes: 1,    // Post cycle interval in minutes (e.g. 1 min or 2 mins)
   proofsPerCycle: 2,     // 2 real proofs per minute as requested
-  minAmount: 0.5,        // Minimum USDT amount
-  maxAmount: 500         // Maximum USDT amount
+  minAmount: 0.1,        // Minimum USDT amount (never below 0.1$)
+  maxAmount: 1.0         // Maximum USDT amount (never above 1.0$)
 };
 
 let currentConfig = { ...defaultConfig };
