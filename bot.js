@@ -8,7 +8,8 @@ import {
   formatChannelProofPost, 
   getAdminPreviewButtons,
   getCurrentFund,
-  deductFund
+  deductFund,
+  setFund
 } from './formatter.js';
 import { 
   startAutoPilot, 
@@ -43,6 +44,18 @@ export function createBot() {
 
   bot.catch((err, ctx) => {
     console.error(`⚠️ Telegram Bot error for ${ctx?.updateType || 'update'}:`, err.message || err);
+  });
+
+  // Analyze messages directly from the channel to keep All Fund strictly synchronized
+  bot.on('channel_post', (ctx) => {
+    const text = ctx.channelPost?.text || '';
+    const match = text.match(/All Fund\s+([0-9.]+)\s+USDT/i);
+    if (match) {
+      const fundFromChannel = parseFloat(match[1]);
+      if (!isNaN(fundFromChannel) && fundFromChannel > 0) {
+        setFund(fundFromChannel);
+      }
+    }
   });
 
   // Security Middleware: Identify admin

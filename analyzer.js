@@ -121,7 +121,7 @@ async function getWorkingProvider() {
  * @param {number} minUsdt Minimum payout amount
  * @param {number} maxUsdt Maximum payout amount
  */
-export async function fetchRealBscUsdtPayouts(count = 2, minUsdt = 0.1, maxUsdt = 1.0) {
+export async function fetchRealBscUsdtPayouts(count = 3, minUsdt = 0.1, maxUsdt = 1.0) {
   const provider = await getWorkingProvider();
   const currentBlock = await provider.getBlockNumber();
 

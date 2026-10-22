@@ -50,6 +50,22 @@ export function deductFund(amount) {
 }
 
 /**
+ * Set All Fund explicitly (e.g. analyzed from channel post)
+ */
+export function setFund(newFund) {
+  if (typeof newFund === 'number' && !isNaN(newFund) && newFund > 0) {
+    try {
+      fs.writeFileSync(FUND_FILE, JSON.stringify({
+        currentFund: newFund,
+        updatedAt: new Date().toISOString()
+      }, null, 2), 'utf-8');
+    } catch (err) {
+      console.error('Error syncing fund state:', err);
+    }
+  }
+}
+
+/**
  * Format channel payment proof EXACTLY matching the user's requested design
  */
 export function formatChannelProofPost(data) {

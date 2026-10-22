@@ -14,7 +14,7 @@ const STATS_FILE = path.join(__dirname, 'stats.json');
 const defaultConfig = {
   enabled: true,         // Auto-post enabled by default
   intervalMinutes: 1,    // Post cycle interval in minutes (e.g. 1 min or 2 mins)
-  proofsPerCycle: 2,     // 2 real proofs per minute as requested
+  proofsPerCycle: 3,     // 3 real proofs per minute as requested
   minAmount: 0.1,        // Minimum USDT amount (never below 0.1$)
   maxAmount: 1.0         // Maximum USDT amount (never above 1.0$)
 };
@@ -110,9 +110,9 @@ export async function runProofCycle(telegram, requestedCount = null) {
         recordStats(payout.amount, 'USDT');
         console.log(`📢 [${i + 1}/${realPayouts.length}] Posted proof: ${payout.amount} USDT (Tx: ${payout.txHash.slice(0, 10)}...)`);
 
-        // Wait 6 seconds between posts for natural appearance
+        // Wait 15 seconds between posts for even spacing across the minute
         if (i < realPayouts.length - 1) {
-          await new Promise(res => setTimeout(res, 6000));
+          await new Promise(res => setTimeout(res, 15000));
         }
       } catch (postErr) {
         console.error(`❌ Failed to post proof ${i + 1} to channel:`, postErr.message);
