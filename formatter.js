@@ -1,0 +1,51 @@
+import { config } from './config.js';
+
+/**
+ * Format channel payment proof EXACTLY matching the user's requested design
+ */
+export function formatChannelProofPost(data) {
+  const botHandle = config.botUsername || 'meta_farming_pement_bot';
+  const amountStr = typeof data.amount === 'number' 
+    ? data.amount.toFixed(4) 
+    : (parseFloat(data.amount) ? parseFloat(data.amount).toFixed(4) : data.amount);
+
+  return `💎 𝐌𝐄𝐓𝐀 𝐅𝐀𝐑𝐌𝐈𝐍𝐆
+━━━━━━━━━━━━━━━━━━━━━━
+✦ 𝐏𝐀𝐘𝐌𝐄𝐍𝐓 𝐑𝐄𝐂𝐄𝐈𝐏𝐓 ✦ 💚 ${amountStr} USDT ✓ Withdrawal Processed
+━━━━━━━━━━━━━━━━━━━━━━
+👤 𝐑𝐄𝐂𝐈𝐏𝐈𝐄𝐍𝐓
+${data.maskedUsername}
+💳 𝐏𝐀𝐘𝐌𝐄𝐍𝐓 𝐃𝐄𝐓𝐀𝐈𝐋𝐒
+◈ Amount ${amountStr} USDT
+◈ Network BNB Smart Chain
+◈ Protocol BEP-20
+◈ Date ${data.dateStr}
+━━━━━━━━━━━━━━━━━━━━━━
+📤 𝐅𝐑𝐎𝐌
+${data.maskedFrom}
+📥 𝐓𝐎
+${data.maskedTo}
+━━━━━━━━━━━━━━━━━━━━━━
+🔎 𝐎𝐍-𝐂𝐇𝐀𝐈𝐍 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍
+<a href="https://bscscan.com/tx/${data.txHash}">View Transaction on BscScan</a>
+━━━━━━━━━━━━━━━━━━━━━━
+💠 𝐌𝐄𝐓𝐀 𝐅𝐀𝐑𝐌𝐈𝐍𝐆
+Your Rewards. Your Progress.
+🤖 @${botHandle}`;
+}
+
+/**
+ * Preview buttons for Admin
+ */
+export function getAdminPreviewButtons() {
+  return {
+    inline_keyboard: [
+      [
+        { text: '📢 Confirm & Post to Channel', callback_data: 'confirm_post' }
+      ],
+      [
+        { text: '❌ Cancel', callback_data: 'cancel_post' }
+      ]
+    ]
+  };
+}
