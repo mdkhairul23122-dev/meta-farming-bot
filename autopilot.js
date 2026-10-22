@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { fetchRealBscUsdtPayouts, formatDateTime, maskWalletAddress, generateRealisticMaskedUsername } from './analyzer.js';
-import { formatChannelProofPost } from './formatter.js';
+import { formatChannelProofPost, deductFund } from './formatter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,6 +94,8 @@ export async function runProofCycle(telegram, requestedCount = null) {
     let postedCount = 0;
     for (let i = 0; i < realPayouts.length; i++) {
       const payout = realPayouts[i];
+      const remainingFund = deductFund(payout.amount);
+      payout.allFund = remainingFund;
       const messageText = formatChannelProofPost(payout);
 
       try {

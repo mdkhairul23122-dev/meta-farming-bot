@@ -6,7 +6,9 @@ import { config, isAdmin } from './config.js';
 import { getBscTransactionDetails, formatTxDate } from './bsc.js';
 import { 
   formatChannelProofPost, 
-  getAdminPreviewButtons 
+  getAdminPreviewButtons,
+  getCurrentFund,
+  deductFund
 } from './formatter.js';
 import { 
   startAutoPilot, 
@@ -528,6 +530,8 @@ export function createBot() {
     await ctx.answerCbQuery('Posting to channel...');
 
     try {
+      const remainingFund = deductFund(proofData.amount);
+      proofData.allFund = remainingFund;
       const messageText = formatChannelProofPost(proofData);
       await ctx.telegram.sendMessage(config.channelUsername, messageText, {
         parse_mode: 'HTML',

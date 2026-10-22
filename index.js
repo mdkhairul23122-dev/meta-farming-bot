@@ -18,7 +18,7 @@ server.on('error', (err) => {
   }
 });
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`🌐 Web health server active on port ${port}`);
 });
 
