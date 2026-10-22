@@ -22,6 +22,19 @@ server.listen(port, '0.0.0.0', () => {
   console.log(`🌐 Web health server active on port ${port}`);
 });
 
+// Render 24/7 Keep-Alive: Ping itself every 5 minutes to prevent sleep
+const renderUrl = process.env.RENDER_EXTERNAL_URL || 'https://meta-farming-bot.onrender.com';
+setInterval(() => {
+  try {
+    http.get(`http://127.0.0.1:${port}`, () => {}).on('error', () => {});
+    if (renderUrl.startsWith('https://')) {
+      import('https').then(({ default: https }) => {
+        https.get(renderUrl, () => {}).on('error', () => {});
+      }).catch(() => {});
+    }
+  } catch (e) {}
+}, 5 * 60 * 1000);
+
 // Prevent unhandled errors from terminating the bot
 process.on('uncaughtException', (err) => {
   console.error('⚠️ Caught unhandled exception:', err.message || err);

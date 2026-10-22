@@ -1,7 +1,7 @@
 {
   "enabled": true,
   "intervalMinutes": 1,
-  "proofsPerCycle": 3,
+  "proofsPerCycle": 2,
   "minAmount": 0.1,
   "maxAmount": 1.0
 }
