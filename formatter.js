@@ -66,10 +66,9 @@ export function setFund(newFund) {
 }
 
 /**
- * Format channel payment proof EXACTLY matching the user's requested design
+ * Format channel payment proof EXACTLY matching the user's requested DollarNest design
  */
 export function formatChannelProofPost(data) {
-  const projectBotHandle = config.projectBotUsername || 'Meta_Farming_bot';
   const amountStr = typeof data.amount === 'number' 
     ? data.amount.toFixed(4) 
     : (parseFloat(data.amount) ? parseFloat(data.amount).toFixed(4) : data.amount);
@@ -77,32 +76,43 @@ export function formatChannelProofPost(data) {
   const fundNum = data.allFund !== undefined 
     ? (typeof data.allFund === 'number' ? data.allFund : parseFloat(data.allFund))
     : getCurrentFund();
-  const allFundStr = (fundNum && !isNaN(fundNum)) ? fundNum.toFixed(4) : '1000.0000';
+  const allFundStr = (fundNum && !isNaN(fundNum)) ? fundNum.toFixed(4) : '956.4794';
 
-  return `💎 𝐌𝐄𝐓𝐀 𝐅𝐀𝐑𝐌𝐈𝐍𝐆
-━━━━━━━━━━━━━━━━━━━━━━
-✦ 𝐏𝐀𝐘𝐌𝐄𝐍𝐓 𝐑𝐄𝐂𝐄𝐈𝐏𝐓 ✦ 💚 ${amountStr} USDT ✓ Withdrawal Processed
-━━━━━━━━━━━━━━━━━━━━━━
-👤 𝐑𝐄𝐂𝐈𝐏𝐈𝐄𝐍𝐓
-${data.maskedUsername}
-💳 𝐏𝐀𝐘𝐌𝐄𝐍𝐓 𝐃𝐄𝐓𝐀𝐈𝐋𝐒
-◈ Amount ${amountStr} USDT
-◈ Network BNB Smart Chain
-◈ Protocol BEP-20
-◈ Date ${data.dateStr}
+  const username = data.maskedUsername || '@sk***10';
+  const fromAddr = data.maskedFrom || '0xf0f6...e3c4';
+  const toAddr = data.maskedTo || '0x6f4f...9383';
+
+  return `💎 DOLLARNEST | FUNDING WALLET 💎
+━━━━━━━━━━━━━━━━━━━━
+👤 Username: ${username}
+📤 Transaction Details
+💵 Amount: ${amountStr} USDT
+📥 From: ${fromAddr}
+📤 Send To: ${toAddr}
+🌐 Network: Binance Smart Chain (BEP-20)
+━━━━━━━━━━━━━━━━━━━━
 ◈ All Fund ${allFundStr} USDT
-━━━━━━━━━━━━━━━━━━━━━━
-📤 𝐅𝐑𝐎𝐌
-${data.maskedFrom}
-📥 𝐓𝐎
-${data.maskedTo}
-━━━━━━━━━━━━━━━━━━━━━━
-🔎 𝐎𝐍-𝐂𝐇𝐀𝐈𝐍 𝐕𝐄𝐑𝐈𝐅𝐈𝐂𝐀𝐓𝐈𝐎𝐍
-<a href="https://bscscan.com/tx/${data.txHash}">View Transaction on BscScan</a>
-━━━━━━━━━━━━━━━━━━━━━━
-💠 𝐌𝐄𝐓𝐀 𝐅𝐀𝐑𝐌𝐈𝐍𝐆
-Your Rewards. Your Progress.
-🤖 @${projectBotHandle}`;
+✅ Status: Funds Available `;
+}
+
+/**
+ * 2 Link Buttons at bottom of channel post:
+ * 1. Official Bot
+ * 2. Bsc Transaction (BscScan URL)
+ */
+export function getChannelProofButtons(txHash) {
+  const officialBotUrl = config.officialBotLink 
+    || (config.projectBotUsername ? `https://t.me/${config.projectBotUsername.replace('@', '')}` : 'https://t.me/Meta_Farming_bot');
+  const bscScanUrl = `https://bscscan.com/tx/${txHash}`;
+
+  return {
+    inline_keyboard: [
+      [
+        { text: 'Official Bot', url: officialBotUrl },
+        { text: 'Bsc Transaction', url: bscScanUrl }
+      ]
+    ]
+  };
 }
 
 /**

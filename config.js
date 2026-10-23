@@ -12,6 +12,7 @@ export const config = {
   projectLink: process.env.PROJECT_LINK || 'https://t.me/Meta_Farming_Payment_Proof',
   botUsername: process.env.BOT_USERNAME || 'meta_farming_pement_bot',
   projectBotUsername: process.env.PROJECT_BOT_USERNAME || 'Meta_Farming_bot',
+  officialBotLink: process.env.OFFICIAL_BOT_LINK || (process.env.PROJECT_BOT_USERNAME ? `https://t.me/${process.env.PROJECT_BOT_USERNAME.replace('@', '')}` : 'https://t.me/Meta_Farming_bot'),
   bscRpcUrls: (process.env.BSC_RPC_URLS || 'https://bsc-dataseed.binance.org/,https://binance.llamarpc.com,https://bsc-rpc.publicnode.com')
     .split(',')
     .map(url => url.trim())

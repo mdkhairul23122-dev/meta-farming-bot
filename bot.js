@@ -6,6 +6,7 @@ import { config, isAdmin } from './config.js';
 import { getBscTransactionDetails, formatTxDate } from './bsc.js';
 import { 
   formatChannelProofPost, 
+  getChannelProofButtons,
   getAdminPreviewButtons,
   getCurrentFund,
   deductFund,
@@ -18,7 +19,7 @@ import {
   saveConfig, 
   runProofCycle 
 } from './autopilot.js';
-import { formatReceiptDate } from './analyzer.js';
+import { formatReceiptDate, generateRealisticMaskedUsername } from './analyzer.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -461,7 +462,7 @@ export function createBot() {
     await ctx.answerCbQuery();
     const session = sessions.get(ctx.from.id);
     if (!session) return;
-    session.maskedUsername = '@mr**im';
+    session.maskedUsername = generateRealisticMaskedUsername();
     showCustomPreview(ctx, session);
   });
 
@@ -481,7 +482,7 @@ export function createBot() {
         maskedFrom: details.from.slice(0, 6).toLowerCase() + '...' + details.from.slice(-4).toLowerCase(),
         maskedTo: details.to.slice(0, 6).toLowerCase() + '...' + details.to.slice(-4).toLowerCase(),
         amount: parseFloat(details.amount) ? parseFloat(details.amount).toFixed(4) : details.amount,
-        maskedUsername: '@mr**im',
+        maskedUsername: generateRealisticMaskedUsername(),
         dateStr
       };
 
@@ -491,7 +492,9 @@ export function createBot() {
       await ctx.replyWithHTML(
         `👀 <b>CHANNEL POST PREVIEW</b>\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
         `${previewText}\n\n` +
-        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📢 <i>Ready to post to ${config.channelUsername}?</i>`,
+        `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+        `🔘 <i>Buttons attached: [Official Bot] [Bsc Transaction]</i>\n\n` +
+        `📢 <i>Ready to post to ${config.channelUsername}?</i>`,
         getAdminPreviewButtons()
       );
     } catch (err) {
@@ -516,7 +519,7 @@ export function createBot() {
       maskedFrom: '0x8bc0...b689',
       maskedTo: '0x22da...d244',
       amount: numAmt.toFixed(4),
-      maskedUsername: session.maskedUsername || '@username',
+      maskedUsername: session.maskedUsername || generateRealisticMaskedUsername(),
       dateStr
     };
 
@@ -526,7 +529,9 @@ export function createBot() {
     await ctx.replyWithHTML(
       `👀 <b>CUSTOM PROOF PREVIEW</b>\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n` +
       `${previewText}\n\n` +
-      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n📢 <i>Post this to ${config.channelUsername}?</i>`,
+      `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+      `🔘 <i>Buttons attached: [Official Bot] [Bsc Transaction]</i>\n\n` +
+      `📢 <i>Post this to ${config.channelUsername}?</i>`,
       getAdminPreviewButtons()
     );
   }
@@ -548,8 +553,9 @@ export function createBot() {
       const messageText = formatChannelProofPost(proofData);
       await ctx.telegram.sendMessage(config.channelUsername, messageText, {
         parse_mode: 'HTML',
+        reply_markup: getChannelProofButtons(proofData.txHash),
         link_preview_options: {
-          is_disabled: false
+          is_disabled: true
         }
       });
 

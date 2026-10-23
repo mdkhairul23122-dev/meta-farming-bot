@@ -67,7 +67,7 @@ const USERNAME_SUFFIXES = [
 export function generateRealisticMaskedUsername() {
   const prefix = USERNAME_PREFIXES[Math.floor(Math.random() * USERNAME_PREFIXES.length)];
   const suffix = USERNAME_SUFFIXES[Math.floor(Math.random() * USERNAME_SUFFIXES.length)];
-  return `@${prefix}**${suffix}`;
+  return `@${prefix}***${suffix}`;
 }
 
 /**

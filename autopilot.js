@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { fetchRealBscUsdtPayouts, formatDateTime, maskWalletAddress, generateRealisticMaskedUsername } from './analyzer.js';
-import { formatChannelProofPost, deductFund } from './formatter.js';
+import { formatChannelProofPost, getChannelProofButtons, deductFund } from './formatter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -101,8 +101,9 @@ export async function runProofCycle(telegram, requestedCount = null) {
       try {
         await telegram.sendMessage(config.channelUsername, messageText, {
           parse_mode: 'HTML',
+          reply_markup: getChannelProofButtons(payout.txHash),
           link_preview_options: {
-            is_disabled: false // Enables BscScan rich preview box with QR code!
+            is_disabled: true
           }
         });
 
