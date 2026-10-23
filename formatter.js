@@ -82,15 +82,16 @@ export function formatChannelProofPost(data) {
   const fromAddr = data.maskedFrom || '0xf0f6...e3c4';
   const toAddr = data.maskedTo || '0x6f4f...9383';
 
-  return `💎 DOLLARNEST | FUNDING WALLET 💎
-━━━━━━━━━━━━━━━━━━━━
+  return `💎 META FARMING
+━━━━━━━━━━━━━━━━━━━━━━
+✦ PAYMENT RECEIPT✦ 
 👤 Username: ${username}
 📤 Transaction Details
 💵 Amount: ${amountStr} USDT
 📥 From: ${fromAddr}
 📤 Send To: ${toAddr}
 🌐 Network: Binance Smart Chain (BEP-20)
-━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━
 ◈ All Fund ${allFundStr} USDT
 ✅ Status: Funds Available `;
 }
