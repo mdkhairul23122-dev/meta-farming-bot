@@ -92,7 +92,6 @@ export function formatChannelProofPost(data) {
 📤 Send To: ${toAddr}
 🌐 Network: Binance Smart Chain (BEP-20)
 ━━━━━━━━━━━━━━━━━━━━━━
-◈ All Fund ${allFundStr} USDT
 ✅ Status: Funds Available `;
 }
 
