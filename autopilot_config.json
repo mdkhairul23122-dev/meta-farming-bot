@@ -3,5 +3,5 @@
   "intervalMinutes": 1,
   "proofsPerCycle": 2,
   "minAmount": 0.1,
-  "maxAmount": 1.0
+  "maxAmount": 1
 }
